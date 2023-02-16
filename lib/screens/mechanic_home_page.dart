@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:virtual_workshop/widgets/mechanic_drawer.dart';
 
 class MechanicHomePage extends StatelessWidget {

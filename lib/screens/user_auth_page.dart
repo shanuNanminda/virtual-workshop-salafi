@@ -1,8 +1,5 @@
-import 'package:carousel_slider/carousel_slider.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
 import 'package:virtual_workshop/screens/user_home_page.dart';
 import 'package:virtual_workshop/services/http_services.dart';
