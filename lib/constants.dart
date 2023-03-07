@@ -8,8 +8,8 @@ class Constants {
 
   static String baseUrl = 'http://192.168.68.172:8000/';
 
-  static List<Map<String, String>> youtubeLinks = [
-    {'name': 'pixel 7', 'url': 'https://www.youtube.com/watch?v=gt0HN1YTVpU'},
-    {'name': 'flutter', 'url': 'https://www.youtube.com/watch?v=Gyf807q3mro'},
-  ];
+  // static List<Map<String, String>> youtubeLinks = [
+  //   {'name': 'pixel 7', 'url': 'https://www.youtube.com/watch?v=gt0HN1YTVpU'},
+  //   {'name': 'flutter', 'url': 'https://www.youtube.com/watch?v=Gyf807q3mro'},
+  // ];
 }

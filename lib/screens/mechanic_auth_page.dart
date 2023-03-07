@@ -212,15 +212,15 @@ class _AuthPageState extends State<WorkshopAuthPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
-                      maxLines: 4,
+                      // maxLines: 4,
                       validator: (v) {
                         if (v!.isEmpty) {
-                          return 'enter address';
+                          return 'enter field of expertise';
                         }
                       },
                       controller: addressController,
                       decoration: InputDecoration(
-                        label: Text('address'),
+                        label: Text('field of expertise'),
                         border: OutlineInputBorder(),
                       ),
                     ),

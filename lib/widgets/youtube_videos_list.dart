@@ -7,9 +7,9 @@ import '../constants.dart';
 import '../screens/youtube_video_webview.dart';
 
 class YoutubeVideosList extends StatelessWidget {
-   YoutubeVideosList({super.key,required this.videos});
+   YoutubeVideosList({super.key});
 
-  List<Map> videos;
+  
 
   
 
@@ -22,7 +22,7 @@ class YoutubeVideosList extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }else if(snap.hasData) {
         return ListView.builder(
-          itemCount: Constants.youtubeLinks.length,
+          itemCount: snap.data.length,
           itemBuilder: (_, index) {
             return InkWell(
               onTap: () {

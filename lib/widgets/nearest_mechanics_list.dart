@@ -53,15 +53,15 @@ class NearestMechanicsList extends StatelessWidget {
   TextEditingController model = TextEditingController();
 
   showRequestForm(BuildContext context, String id) async {
-   showModalBottomSheet(
-        // shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-        // backgroundColor: Colors.black,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => Padding(
-          padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
+    showModalBottomSheet(
+      // shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+      // backgroundColor: Colors.black,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -128,7 +128,7 @@ class NearestMechanicsList extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                sendRequest(id,context);
+                sendRequest(id, context);
               },
               child: Text('Send Request'),
             )
@@ -138,11 +138,11 @@ class NearestMechanicsList extends StatelessWidget {
     );
   }
 
-  sendRequest(String id,BuildContext context) async {
+  sendRequest(String id, BuildContext context) async {
     SharedPreferences spref = await SharedPreferences.getInstance();
     LocationData loc = await Location.instance.getLocation();
 
-Map data=  await  HttpServices.postData(params: {
+    Map data = await HttpServices.postData(params: {
       "id": id,
       "customer": spref.getString('userId'),
       "workshop": id,
@@ -155,9 +155,9 @@ Map data=  await  HttpServices.postData(params: {
       "problem": problem.text,
       "vehicle_model": model.text,
     }, endPoint: 'Wrequest_view');
-    if(data['id']!=null){
-Fluttertoast.showToast(msg: 'Requested succesfully');
-Navigator.pop(context);
+    if (data['id'] != null) {
+      Fluttertoast.showToast(msg: 'Requested succesfully');
+      Navigator.pop(context);
     }
   }
 
@@ -171,7 +171,8 @@ Navigator.pop(context);
         } else if (snap.hasData) {
           (snap.data as List).sort(
             (a, b) => calculateDistance(
-                    a['location'].split(',').first, a['location'].split(',')[1])
+                    double.parse('${a['location']}'.split(',').first),
+                    double.parse('${a['location']}'.split(',')[1]))
                 .round(),
           );
           return ListView.builder(
@@ -182,12 +183,23 @@ Navigator.pop(context);
                     title: Text(
                       snap.data![index]['workshop_name'],
                     ),
-                    subtitle: Text(
-                      snap.data![index]['phone_number'],
+                    subtitle: Column(
+
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'field: ${snap.data![index]['address']}',
+                        ),
+                        Text(
+                          snap.data![index]['phone_number'],
+                        ),
+                      ],
                     ),
-                    trailing: ElevatedButton(
+                    trailing: MaterialButton(
+                        // color: snap.data![index]['status']==0?Colors.blue:,
                         onPressed: () {
-                          showRequestForm(context,'${snap.data![index]['id']}');
+                          showRequestForm(
+                              context, '${snap.data![index]['id']}');
                         },
                         child: Text('Request')),
                   ),
