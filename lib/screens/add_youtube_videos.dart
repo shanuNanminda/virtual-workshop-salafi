@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_workshop/constants.dart';
 import 'package:virtual_workshop/services/http_services.dart';
 
@@ -32,10 +33,14 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
     });
   }
 
-
-  
-
-  
+  addVideo() async {
+    final spref=await SharedPreferences.getInstance();
+    HttpServices.postData(params: {
+      'user':spref.getString('userId'),
+      'description': videoNameController.text,
+      'link': urlController.text,
+    }, endPoint: 'Ytlink');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +52,9 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
           children: [
             Expanded(
               child: SizedBox(
-                child:
-                    Image.network(isImageValid ?HttpServices. convertVideoLinkToImage(urlController.text) :Constants. imageUrl),
+                child: Image.network(isImageValid
+                    ? HttpServices.convertVideoLinkToImage(urlController.text)
+                    : Constants.imageUrl),
               ),
             ),
             Padding(
@@ -56,6 +62,7 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
               child: TextFormField(
                 controller: urlController,
                 decoration: const InputDecoration(
+                  label: Text('video url'),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (url) {
@@ -74,6 +81,7 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
               child: TextFormField(
                 controller: videoNameController,
                 decoration: const InputDecoration(
+                  label: Text('video name'),
                   border: OutlineInputBorder(),
                 ),
                 validator: (V) {
@@ -84,7 +92,15 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
             ),
-            ElevatedButton(onPressed: null, child: Text('Add'))
+            ElevatedButton(
+                onPressed: isImageValid
+                    ? () {
+                        if (fkey.currentState!.validate()) {
+                          addVideo();
+                        }
+                      }
+                    : null,
+                child: Text('Add'))
           ],
         ),
       ),

@@ -1,7 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:virtual_workshop/screens/mechanic_home_page.dart';
 import 'package:virtual_workshop/screens/user_home_page.dart';
 import 'package:virtual_workshop/services/http_services.dart';
 
@@ -23,7 +26,7 @@ class _AuthPageState extends State<WorkshopAuthPage> {
   TextEditingController nameController = TextEditingController();
   var formkey = GlobalKey<FormState>();
   LocationData? locationData;
-CarouselController carController=CarouselController();
+  CarouselController carController = CarouselController();
   signUp() async {
     if (formkey.currentState!.validate()) {
       print('sending');
@@ -37,15 +40,54 @@ CarouselController carController=CarouselController();
           'password2': passwordController.text,
           'address': addressController.text,
           'phone_number': phoneController.text,
-          'location':locationController.text,
-          'min_wage':minWageController.text,
+          'location': locationController.text,
+          'min_wage': minWageController.text,
         },
         endPoint: 'Mechanic_registration',
       );
       print(data);
       if (data['result']) {
-        Navigator.pushNamed(context, UserHomePage.routeName);
+        setState(() {
+          isLogin = true;
+        });
+        Fluttertoast.showToast(msg: 'Mechanic account created');
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (ctx) => MechanicHomePage(),
+        //   ),
+        // );
       }
+    }
+  }
+
+  login() async {
+    print('login called');
+    final data = await HttpServices.postData(
+      params: {
+        'uname': usernameController.text,
+        'pass': passwordController.text,
+      },
+      endPoint: 'login_views',
+    );
+    print(data);
+    if (data['status'] == true) {
+      // Navigator.pushNamed(context, MechanicHomePage.routeName);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => MechanicHomePage(),
+        ),
+      );
+      SharedPreferences.getInstance().then((value) {
+        value.setString('userType', 'mechanic');
+        if (data['result']['id'] != null) {
+          value.setString('userId', '${data['result']['id']}');
+        } else {
+          print('No Id');
+        }
+      });
+    } else {
+      Fluttertoast.showToast(msg: 'something went wrong');
     }
   }
 
@@ -78,8 +120,21 @@ CarouselController carController=CarouselController();
     });
   }
 
+  ScrollController _scrollController = ScrollController();
+  late double screenHeight;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero).then((value) => _scrollController.animateTo(
+        screenHeight,
+        duration: Duration(seconds: 2),
+        curve: Curves.easeIn));
+  }
+
   @override
   Widget build(BuildContext context) {
+    screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -91,13 +146,13 @@ CarouselController carController=CarouselController();
         child: Form(
           key: formkey,
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-              
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text(isLogin ? 'Login' : 'SignUp',
+                  child: Text('Mechanic ${isLogin ? 'Login' : 'SignUp'}',
                       style: TextStyle(
                         fontSize: 30,
                       )),
@@ -118,39 +173,41 @@ CarouselController carController=CarouselController();
                     ),
                   ),
                 ),
-               if(!isLogin) Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextFormField(
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return 'enter name';
-                      }
-                    },
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      label: Text('name'),
-                      border: OutlineInputBorder(),
+                if (!isLogin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      validator: (v) {
+                        if (v!.isEmpty) {
+                          return 'enter name';
+                        }
+                      },
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        label: Text('name'),
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
-               if(!isLogin) Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextFormField(
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return 'location is not given';
-                      }
-                    },
-                    controller: locationController,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                          onPressed: fetchLocation,
-                          icon: Icon(Icons.location_on)),
-                      label: Text('location'),
-                      border: OutlineInputBorder(),
+                if (!isLogin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      validator: (v) {
+                        if (v!.isEmpty) {
+                          return 'location is not given';
+                        }
+                      },
+                      controller: locationController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                            onPressed: fetchLocation,
+                            icon: Icon(Icons.location_on)),
+                        label: Text('location'),
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
                 if (!isLogin)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -185,7 +242,7 @@ CarouselController carController=CarouselController();
                       ),
                     ),
                   ),
-                  if (!isLogin)
+                if (!isLogin)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
@@ -193,7 +250,7 @@ CarouselController carController=CarouselController();
                       validator: (v) {
                         if (v!.isEmpty) {
                           return 'enter min wage';
-                        }else if(int.parse(v)<1){
+                        } else if (int.parse(v) < 1) {
                           return 'enter minimum amount';
                         }
                       },
@@ -224,25 +281,28 @@ CarouselController carController=CarouselController();
                   child: ElevatedButton(
                       onPressed: () {
                         // Navigator.of(context).pushNamed(HomePage.routeName);
-                       isLogin? null :signUp();
+                        isLogin ? login() : signUp();
                       },
                       child: Text(isLogin ? 'Login' : 'SignUp')),
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // TextButton(
+                    //     onPressed: () {
+                    //       Navigator.pushNamed(
+                    //           context, WorkshopAuthPage.routeName);
+                    //     },
+                    //     child: Text(
+                    //         isLogin ? 'SignUp instead?' : 'SignUp instead')),
                     TextButton(
-                        onPressed: () {Navigator.pushNamed(context, WorkshopAuthPage.routeName);
-                        },
-                        child:
-                            Text(isLogin ? 'SignUp instead?' : 'SignUp instead')),
-                            TextButton(
                         onPressed: () {
                           setState(() {
                             isLogin = !isLogin;
                           });
                         },
-                        child:
-                            Text(isLogin ? 'SignUp instead?' : 'SignUp instead')),
+                        child: Text(
+                            isLogin ? 'SignUp instead?' : 'Login instead')),
                   ],
                 ),
               ],

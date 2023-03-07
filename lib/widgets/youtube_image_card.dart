@@ -41,7 +41,7 @@ class YoutubeImageCard extends StatelessWidget {
               ),
               child: Text(
                 imageTitle,
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(fontSize: 25,color: Colors.blue),
               ),
             ),
           ],

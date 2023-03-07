@@ -1,10 +1,9 @@
-
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_workshop/screens/user_home_page.dart';
 import 'package:virtual_workshop/services/http_services.dart';
-
-import 'mechanic_auth_page.dart';
 
 class UserAuthPage extends StatefulWidget {
   UserAuthPage({super.key});
@@ -39,14 +38,56 @@ class _AuthPageState extends State<UserAuthPage> {
         endPoint: 'user_registration',
       );
       print(data);
-      if (data['result']) {
-        Navigator.pushNamed(context, UserHomePage.routeName);
+      if (data['result'] == true) {
+        setState(() {
+          isLogin = true;
+        });
+        Fluttertoast.showToast(msg: 'User account created');
+      } else {
+        Fluttertoast.showToast(msg: 'something went wrong');
       }
     }
   }
 
+  login() async {
+    print('login called');
+    final data = await HttpServices.postData(
+      params: {
+        'uname': usernameController.text,
+        'pass': passwordController.text,
+      },
+      endPoint: 'login_views',
+    );
+    print(data);
+    if (data['status'] == true) {
+      Navigator.pushNamed(context, UserHomePage.routeName);
+      SharedPreferences.getInstance().then((value) {
+        value.setString('userType', 'user');
+        if (data['result']['id'] != null) {
+          value.setString('userId', '${data['result']['id']}');
+        } else {
+          print('No Id');
+        }
+      });
+    } else {
+      Fluttertoast.showToast(msg: 'something went wrong');
+    }
+  }
+
+  ScrollController _scrollController = ScrollController();
+late double screenHeight;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero).then((value) => _scrollController.animateTo(screenHeight,
+        duration: Duration(seconds: 2), curve: Curves.easeIn));
+    
+  }
+
   @override
   Widget build(BuildContext context) {
+    screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -58,13 +99,13 @@ class _AuthPageState extends State<UserAuthPage> {
         child: Form(
           key: formkey,
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text(isLogin ? 'Login' : 'SignUp',
+                  child: Text('User ${isLogin ? 'Login' : 'SignUp'}',
                       style: TextStyle(
                         fontSize: 30,
                       )),
@@ -85,21 +126,22 @@ class _AuthPageState extends State<UserAuthPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextFormField(
-                    validator: (v) {
-                      if (v!.isEmpty) {
-                        return 'enter name';
-                      }
-                    },
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      label: Text('name'),
-                      border: OutlineInputBorder(),
+                if (!isLogin)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      validator: (v) {
+                        if (v!.isEmpty) {
+                          return 'enter name';
+                        }
+                      },
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        label: Text('name'),
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
                 if (!isLogin)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -154,25 +196,28 @@ class _AuthPageState extends State<UserAuthPage> {
                   child: ElevatedButton(
                       onPressed: () {
                         // Navigator.of(context).pushNamed(HomePage.routeName);
-                        signUp();
+                        isLogin ? login() : signUp();
                       },
                       child: Text(isLogin ? 'Login' : 'SignUp')),
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // TextButton(
+                    //     onPressed: () {
+                    //       Navigator.pushNamed(
+                    //           context, WorkshopAuthPage.routeName);
+                    //     },
+                    //     child: Text(
+                    //         isLogin ? 'SignUp instead?' : 'SignUp instead')),
                     TextButton(
-                        onPressed: () {Navigator.pushNamed(context, WorkshopAuthPage.routeName);
-                        },
-                        child:
-                            Text(isLogin ? 'SignUp instead?' : 'SignUp instead')),
-                            TextButton(
                         onPressed: () {
                           setState(() {
                             isLogin = !isLogin;
                           });
                         },
-                        child:
-                            Text(isLogin ? 'SignUp instead?' : 'SignUp instead')),
+                        child: Text(
+                            isLogin ? 'SignUp instead?' : 'Login instead')),
                   ],
                 ),
               ],
