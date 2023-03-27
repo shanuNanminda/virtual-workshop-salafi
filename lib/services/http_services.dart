@@ -34,6 +34,7 @@ return 'https://i.ytimg.com/vi/${videoUrl.substring(videoUrl.length-11, videoUrl
     try {
       Response res = await get(Uri.parse(Constants.baseUrl + endPoint));
       if (res.statusCode < 299 && res.statusCode > 199) {
+        print('response for $endPoint: ${res.body}');
         return jsonDecode(res.body);
       } else {
         return {res: 'connection error with code: ${res.statusCode}'};

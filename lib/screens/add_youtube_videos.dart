@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_workshop/constants.dart';
@@ -35,11 +36,15 @@ class _AddYoutubeVideoState extends State<AddYoutubeVideo> {
 
   addVideo() async {
     final spref=await SharedPreferences.getInstance();
-    HttpServices.postData(params: {
+    final res=await HttpServices.postData(params: {
       'user':spref.getString('userId'),
       'description': videoNameController.text,
       'link': urlController.text,
     }, endPoint: 'Ytlink');
+    if(res['link']!=null){
+      Fluttertoast.showToast(msg: 'video added');
+      Navigator.pop(context);
+    }
   }
 
   @override

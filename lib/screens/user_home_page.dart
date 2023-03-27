@@ -31,7 +31,7 @@ class UserHomePage extends StatelessWidget {
         ),
         body: TabBarView(children: [
         NearestMechanicsList(),
-          YoutubeVideosList(),
+          YoutubeVideosList(forUser: true),
         ]),
       ),
     );

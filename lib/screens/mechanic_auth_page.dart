@@ -87,7 +87,7 @@ class _AuthPageState extends State<WorkshopAuthPage> {
         }
       });
     } else {
-      Fluttertoast.showToast(msg: 'something went wrong');
+      Fluttertoast.showToast(msg: 'something went wrong, ${data['errors']}');
     }
   }
 

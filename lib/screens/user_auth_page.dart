@@ -70,7 +70,7 @@ class _AuthPageState extends State<UserAuthPage> {
         }
       });
     } else {
-      Fluttertoast.showToast(msg: 'something went wrong');
+      Fluttertoast.showToast(msg: 'something went wrong, ${data['errors']}');
     }
   }
 

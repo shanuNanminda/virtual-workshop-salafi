@@ -24,14 +24,14 @@ class UserMainDrawer extends StatelessWidget {
             ),
             Text('USER',style:TextStyle(fontSize: 30)),
             Divider(),
-            Card(
-              child: ListTile(
-                onTap: (){
-                  Navigator.pushNamed(context, WorkshopListPage.routeName);
-                },
-                title: Text('Workshops'),
-              ),
-            ),
+            // Card(
+            //   child: ListTile(
+            //     onTap: (){
+            //       Navigator.pushNamed(context, WorkshopListPage.routeName);
+            //     },
+            //     title: Text('Workshops'),
+            //   ),
+            // ),
              Card(
               child: ListTile(
                 onTap: () async{

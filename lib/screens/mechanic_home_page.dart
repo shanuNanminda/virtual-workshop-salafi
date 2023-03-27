@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_workshop/services/http_services.dart';
 import 'package:virtual_workshop/widgets/mechanic_drawer.dart';
 
@@ -10,9 +13,7 @@ import '../widgets/youtube_videos_list.dart';
 class MechanicHomePage extends StatelessWidget {
   const MechanicHomePage({super.key});
 
-  getData() async {
-    HttpServices.getData('endPoint');
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class MechanicHomePage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          bottom:  const TabBar(tabs: [
+          bottom: const TabBar(tabs: [
             Tab(
               text: 'videos',
             ),
@@ -32,26 +33,7 @@ class MechanicHomePage extends StatelessWidget {
         drawer: MechanicDrawer(),
         body: TabBarView(
           children: [
-            FutureBuilder(builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return YoutubeVideosList(
-              
-                );
-              } else {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Lottie.asset('assets/no_data.json'),
-                      Text(
-                        'No Videos added',
-                        style: TextStyle(fontSize: 25),
-                      )
-                    ],
-                  ),
-                );
-              }
-            }),
+           YoutubeVideosList(forUser: false),
             RequestsList(),
           ],
         ),
